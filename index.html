@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golden Egg Tracker</title>
+  <style>
+    :root {
+      --bg-deep: #0a0c12;
+      --bg-card: #12161f;
+      --bg-elevated: #1a1f2b;
+      --border: #2a3142;
+      --text: #e8ecf4;
+      --text-muted: #8b95a8;
+      --gold: #f0c14b;
+      --gold-dim: #c9a227;
+      --blue: #3b82f6;
+      --blue-bright: #60a5fa;
+      --green: #22c55e;
+      --red: #ef4444;
+      --orange: #f59e0b;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--gold), #f5d78e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 640px;
+      margin: 0 auto 16px;
+    }
+
+    .positioning {
+      background: linear-gradient(135deg, rgba(240,193,75,0.08), rgba(59,130,246,0.06));
+      border: 1px solid rgba(240,193,75,0.25);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 0.9rem;
+      color: var(--text);
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .positioning strong { color: var(--gold); }
+
+    /* Cards & sections */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Dashboard */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    .stat-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-value.gold { color: var(--gold); }
+    .stat-value.blue { color: var(--blue-bright); }
+    .stat-value.green { color: var(--green); }
+
+    .progress-wrap {
+      margin: 20px 0 12px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .progress-bar-bg {
+      height: 14px;
+      background: var(--bg-deep);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      border-radius: 999px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 12px rgba(240,193,75,0.4);
+    }
+
+    .edit-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+      align-items: flex-end;
+    }
+
+    .edit-row label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .edit-row input {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 1rem;
+      width: 140px;
+    }
+
+    .edit-row input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      color: #0a0c12;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(240,193,75,0.35);
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--blue);
+      box-shadow: 0 4px 12px rgba(59,130,246,0.2);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.4);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+    }
+
+    .btn-danger:hover {
+      background: rgba(239,68,68,0.15);
+    }
+
+    /* Quick stats */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .quick-stats { grid-template-columns: 1fr 1fr; }
+    }
+
+    .quick-stat {
+      text-align: center;
+      padding: 12px 8px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .quick-stat .num {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--blue-bright);
+    }
+
+    .quick-stat .lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    textarea { resize: vertical; min-height: 70px; }
+
+    .form-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: var(--bg-elevated);
+      text-align: left;
+      padding: 12px 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-received { background: rgba(34,197,94,0.15); color: var(--green); }
+    .badge-pending { background: rgba(245,158,11,0.15); color: var(--orange); }
+    .badge-cancelled { background: rgba(239,68,68,0.15); color: var(--red); }
+
+    .cat-badge {
+      font-size: 0.75rem;
+      color: var(--blue-bright);
+      background: rgba(59,130,246,0.12);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state p { margin-top: 8px; font-size: 0.9rem; }
+
+    /* Paths */
+    .paths-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .paths-grid { grid-template-columns: 1fr; }
+    }
+
+    .path-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .path-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .path-card.hard::before { background: linear-gradient(90deg, var(--gold), #f5d78e); }
+    .path-card.small::before { background: linear-gradient(90deg, var(--blue), var(--blue-bright)); }
+
+    .path-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .path-card .path-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .path-card ul {
+      list-style: none;
+      margin: 12px 0;
+    }
+
+    .path-card li {
+      padding: 4px 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .path-card li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+    }
+
+    .path-card.small li::before { color: var(--blue-bright); }
+
+    .price-range {
+      font-weight: 600;
+      color: var(--gold);
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    .path-card.small .price-range { color: var(--blue-bright); }
+
+    /* Ideas */
+    .ideas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .idea-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: border-color 0.2s;
+    }
+
+    .idea-card:hover {
+      border-color: var(--gold-dim);
+    }
+
+    .idea-card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .idea-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .idea-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(240,193,75,0.12);
+      color: var(--gold);
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">Golden Egg Tracker</div>
+      <p class="tagline">Track the gigs. Build the capital. Fund the next level.</p>
+      <div class="positioning">
+        <strong>I am a focused interactive coder.</strong> I build clean, working websites and digital tools that solve real problems. I deliver fast, communicate clearly, and stand behind the work. My goal is simple: turn skill into results and results into the resources I need for bigger projects.
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <section class="section">
+      <h2 class="section-title">Dashboard</h2>
+      <div class="card">
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <div class="stat-label">Target</div>
+            <div class="stat-value gold" id="displayTarget">HK$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Already Saved</div>
+            <div class="stat-value" id="displaySaved">HK$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Earned (Gigs)</div>
+            <div class="stat-value blue" id="displayEarned">HK$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Current Total</div>
+            <div class="stat-value green" id="displayTotal">HK$0</div>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-header">
+            <span>Progress to target</span>
+            <span id="displayPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="margin-top:12px; text-align:center;">
+          <div class="stat-label">Still Needed</div>
+          <div class="stat-value gold" id="displayNeeded" style="font-size:1.8rem;">HK$0</div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-top:4px;">One gig at a time. Keep stacking.</p>
+        </div>
+
+        <div class="edit-row">
+          <label>Target (HKD)
+            <input type="number" id="inputTarget" min="0" step="100" placeholder="e.g. 50000" />
+          </label>
+          <label>Already Saved (HKD)
+            <input type="number" id="inputSaved" min="0" step="100" placeholder="e.g. 8000" />
+          </label>
+          <button class="btn" id="btnSaveGoals">Update Goals</button>
+        </div>
+
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <div class="num" id="statTotalGigs">0</div>
+            <div class="lbl">Total Gigs</div>
+          </div>
+          <div class="quick-stat">
+            <div class="num" id="statCodingGigs">0</div>
+            <div class="lbl">Coding / Web</div>
+          </div>
+          <div class="quick-stat">
+            <div class="num" id="statMonth">HK$0</div>
+            <div class="lbl">This Month</div>
+          </div>
+          <div class="quick-stat">
+            <div class="num" id="statAvg">HK$0</div>
+            <div class="lbl">Avg / Gig</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add Gig -->
+    <section class="section">
+      <h2 class="section-title">Add Gig</h2>
+      <div class="card">
+        <form id="gigForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="gigDate">Date</label>
+              <input type="date" id="gigDate" required />
+            </div>
+            <div class="form-group">
+              <label for="gigCategory">Category</label>
+              <select id="gigCategory" required>
+                <option value="">Select category</option>
+                <option value="Coding Gigs">Coding Gigs</option>
+                <option value="Website Handling (Small Path)">Website Handling (Small Path)</option>
+                <option value="Website Building (Hard Path)">Website Building (Hard Path)</option>
+                <option value="Math Tools / Worksheets">Math Tools / Worksheets</option>
+                <option value="School Help / Tutoring">School Help / Tutoring</option>
+                <option value="Health / Fitness">Health / Fitness</option>
+                <option value="My Own Business">My Own Business</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="gigDesc">Description / Project Name</label>
+              <input type="text" id="gigDesc" placeholder="e.g. One-page portfolio site for local coach" required />
+            </div>
+            <div class="form-group">
+              <label for="gigAmount">Amount (HKD)</label>
+              <input type="number" id="gigAmount" min="0" step="50" placeholder="1500" required />
+            </div>
+            <div class="form-group">
+              <label for="gigHours">Hours Spent (optional)</label>
+              <input type="number" id="gigHours" min="0" step="0.5" placeholder="4" />
+            </div>
+            <div class="form-group">
+              <label for="gigStatus">Status</label>
+              <select id="gigStatus" required>
+                <option value="Received">Received</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="gigNotes">Notes</label>
+              <textarea id="gigNotes" placeholder="Client feedback, next steps, payment method..."></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn">Log Gig</button>
+            <button type="reset" class="btn btn-secondary">Clear</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Gig Log -->
+    <section class="section">
+      <h2 class="section-title">Gig Log</h2>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="gigTableBody">
+            </tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="emptyLog" style="display:none;">
+          <p style="font-size:1.1rem;">No gigs logged yet.</p>
+          <p>Log your first win above. Every entry builds the egg.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Golden Paths -->
+    <section class="section">
+      <h2 class="section-title">Golden Paths</h2>
+      <div class="paths-grid">
+        <div class="path-card hard">
+          <div class="path-label">Hard Path · Big Money</div>
+          <h3>Full Websites & Custom Tools</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted);">Higher pay per job. Fewer clients. Deeper skill demonstration.</p>
+          <ul>
+            <li>Complete multi-page websites</li>
+            <li>Custom interactive tools & calculators</li>
+            <li>Client dashboards & admin panels</li>
+            <li>Landing pages with real functionality</li>
+            <li>Math / education tools for parents & teachers</li>
+          </ul>
+          <div class="price-range">Typical range: HK$2,000 – 15,000+ per project</div>
+        </div>
+        <div class="path-card small">
+          <div class="path-label">Small Path · Volume</div>
+          <h3>Website Handling & Care</h3>
+          <p style="font-size:0.9rem;color:var(--text-muted);">Lower pay per job. Many more opportunities. Steady cash flow.</p>
+          <ul>
+            <li>Content updates & text changes</li>
+            <li>Bug fixes & small feature tweaks</li>
+            <li>Monthly maintenance packages</li>
+            <li>Image / product updates for shops</li>
+            <li>Quick one-page sites & forms</li>
+          </ul>
+          <div class="price-range">Typical range: HK$200 – 2,500 per job / month</div>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:16px;color:var(--text-muted);font-size:0.9rem;">
+        Both paths are valid. Stack them. The egg grows either way.
+      </p>
+    </section>
+
+    <!-- Job Ideas -->
+    <section class="section">
+      <h2 class="section-title">Job Ideas Bank</h2>
+      <div class="ideas-grid" id="ideasGrid">
+        <!-- filled by JS -->
+      </div>
+    </section>
+
+    <footer>
+      Golden Egg Tracker · Built for focused builders · Data stays in your browser
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'goldenEggTracker_v1';
+    const GOALS_KEY = 'goldenEggGoals_v1';
+
+    const ideas = [
+      { title: 'Fraction Generator Tool', desc: 'Interactive worksheet generator for parents/teachers. Print-ready pages.', tag: 'Hard Path' },
+      { title: 'One-Page Business Site', desc: 'Clean single-page site for a local coach, tutor, or small service.', tag: 'Hard Path' },
+      { title: 'Website Update Pack', desc: 'Fixed package: 5 content changes + 2 image swaps. Price it clearly.', tag: 'Small Path' },
+      { title: 'Monthly Site Care', desc: 'HK$400–800/month: backups, small updates, uptime check, content tweaks.', tag: 'Small Path' },
+      { title: 'Custom Calculator / Tool', desc: 'BMI, savings, grade, or business margin calculator embedded on a page.', tag: 'Hard Path' },
+      { title: 'School Help Landing Page', desc: 'Simple site for a tutor or after-school program with booking form.', tag: 'Hard Path' },
+      { title: 'Product Photo + Description Update', desc: 'For small online shops. Batch update 10–20 items.', tag: 'Small Path' },
+      { title: 'Math Practice Generator', desc: 'Randomized addition/multiplication sheets with answer keys.', tag: 'Hard Path' },
+      { title: 'Quick Contact Form Fix', desc: 'Repair or style an existing form. Fast turnaround, clear price.', tag: 'Small Path' },
+      { title: 'Portfolio / Resume Site', desc: 'One clean page for a student, freelaancer, or job seeker.', tag: 'Hard Path' },
+      { title: 'Event / Workshop Page', desc: 'Single landing page with date, price, and signup.', tag: 'Hard Path' },
+      { title: 'Content Rewrite + SEO Basics', desc: 'Rewrite 3–5 pages of text for clarity and keywords.', tag: 'Small Path' }
+    ];
+
+    let gigs = [];
+    let goals = { target: 50000, saved: 0 };
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        gigs = raw ? JSON.parse(raw) : [];
+        const gRaw = localStorage.getItem(GOALS_KEY);
+        if (gRaw) goals = JSON.parse(gRaw);
+      } catch (e) {
+        gigs = [];
+        goals = { target: 50000, saved: 0 };
+      }
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(gigs));
+      localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+    }
+
+    function formatHKD(n) {
+      return 'HK$' + Math.round(n).toLocaleString('en-HK');
+    }
+
+    function calcStats() {
+      const received = gigs.filter(g => g.status === 'Received');
+      const earned = received.reduce((s, g) => s + Number(g.amount || 0), 0);
+      const total = goals.saved + earned;
+      const needed = Math.max(0, goals.target - total);
+      const percent = goals.target > 0 ? Math.min(100, (total / goals.target) * 100) : 0;
+
+      const codingCats = ['Coding Gigs', 'Website Handling (Small Path)', 'Website Building (Hard Path)'];
+      const codingCount = gigs.filter(g => codingCats.includes(g.category)).length;
+
+      const now = new Date();
+      const thisMonth = received.filter(g => {
+        const d = new Date(g.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      }).reduce((s, g) => s + Number(g.amount || 0), 0);
+
+      const avg = received.length ? earned / received.length : 0;
+
+      return { earned, total, needed, percent, codingCount, thisMonth, avg, totalGigs: gigs.length };
+    }
+
+    function renderDashboard() {
+      const s = calcStats();
+      document.getElementById('displayTarget').textContent = formatHKD(goals.target);
+      document.getElementById('displaySaved').textContent = formatHKD(goals.saved);
+      document.getElementById('displayEarned').textContent = formatHKD(s.earned);
+      document.getElementById('displayTotal').textContent = formatHKD(s.total);
+      document.getElementById('displayNeeded').textContent = formatHKD(s.needed);
+      document.getElementById('displayPercent').textContent = s.percent.toFixed(1) + '%';
+      document.getElementById('progressFill').style.width = s.percent + '%';
+
+      document.getElementById('statTotalGigs').textContent = s.totalGigs;
+      document.getElementById('statCodingGigs').textContent = s.codingCount;
+      document.getElementById('statMonth').textContent = formatHKD(s.thisMonth);
+      document.getElementById('statAvg').textContent = formatHKD(s.avg);
+
+      document.getElementById('inputTarget').value = goals.target || '';
+      document.getElementById('inputSaved').value = goals.saved || '';
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('gigTableBody');
+      const empty = document.getElementById('emptyLog');
+
+      if (gigs.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      const sorted = [...gigs].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      tbody.innerHTML = sorted.map(g => {
+        const statusClass = g.status === 'Received' ? 'badge-received' :
+                            g.status === 'Pending' ? 'badge-pending' : 'badge-cancelled';
+        return `
+          <tr>
+            <td>${g.date}</td>
+            <td><span class="cat-badge">${escapeHtml(g.category)}</span></td>
+            <td>${escapeHtml(g.description)}</td>
+            <td style="font-weight:600;">${formatHKD(g.amount)}</td>
+            <td><span class="badge ${statusClass}">${g.status}</span></td>
+            <td><button class="btn btn-danger" data-id="${g.id}">Delete</button></td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('[data-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          if (confirm('Delete this gig?')) {
+            gigs = gigs.filter(g => g.id !== id);
+            save();
+            renderAll();
+          }
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderIdeas() {
+      const grid = document.getElementById('ideasGrid');
+      grid.innerHTML = ideas.map(i => `
+        <div class="idea-card">
+          <h4>${i.title}</h4>
+          <p>${i.desc}</p>
+          <span class="idea-tag">${i.tag}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderTable();
+    }
+
+    // Events
+    document.getElementById('btnSaveGoals').addEventListener('click', () => {
+      const t = Number(document.getElementById('inputTarget').value);
+      const s = Number(document.getElementById('inputSaved').value);
+      if (t >= 0) goals.target = t;
+      if (s >= 0) goals.saved = s;
+      save();
+      renderDashboard();
+    });
+
+    document.getElementById('gigForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const gig = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        date: document.getElementById('gigDate').value,
+        category: document.getElementById('gigCategory').value,
+        description: document.getElementById('gigDesc').value.trim(),
+        amount: Number(document.getElementById('gigAmount').value),
+        hours: document.getElementById('gigHours').value ? Number(document.getElementById('gigHours').value) : null,
+        status: document.getElementById('gigStatus').value,
+        notes: document.getElementById('gigNotes').value.trim()
+      };
+      gigs.push(gig);
+      save();
+      renderAll();
+      e.target.reset();
+      // set default date to today
+      document.getElementById('gigDate').valueAsDate = new Date();
+    });
+
+    // Init
+    load();
+    document.getElementById('gigDate').valueAsDate = new Date();
+    renderIdeas();
+    renderAll();
+  </script>
+</body>
+</html>
